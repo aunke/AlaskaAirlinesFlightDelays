@@ -1,0 +1,76 @@
+SAS Studios
+FILENAME REFFILE '/folders/myfolders/sasuser.v94/airline_delay.xlsx';
+
+PROC IMPORT DATAFILE=REFFILE
+    DBMS=XLSX
+    OUT=WORK.IMPORT1;
+    GETNAMES=YES;
+RUN;
+
+PROC CONTENTS DATA=WORK.IMPORT1; RUN;
+
+Summary statistics
+proc means data=WORK.IMPORT1 chartype mean std min max n vardef=df;
+    var _arr_delay _carrier_delay weather_delay nas_delay security_delay
+        late_aircraft_delay;
+    class year;
+run;
+
+proc means data=WORK.IMPORT1 chartype mean std min max n vardef=df;
+    var _arr_delay _carrier_delay weather_delay nas_delay security_delay
+        late_aircraft_delay;
+    class carrier;
+Run;
+
+proc means data=WORK.IMPORT1 chartype mean std min max n vardef=df;
+    var arr_flights arr_del15 arr_cancelled arr_diverted _arr_delay;
+    class year;
+Run
+
+proc means data=WORK.IMPORT chartype mean std min max n sum vardef=df;
+    var arr_flights arr_del15 arr_cancelled arr_diverted;
+    class year;
+Run;
+
+PYTHON JUPYTER
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# load Alaska Airlines data set
+filename = 'airline_delays.csv'
+df = pd.read_csv(filename)
+
+df.head()
+
+# Total number of flights per category per year
+df.groupby('year').sum()[['arr_flights', 'arr_del15', 'arr_cancelled', 'arr_diverted']]
+
+df.groupby('year').sum()[['arr_flights', 'arr_del15', 'arr_cancelled', 'arr_diverted']].plot(kind='bar')
+plt.show
+
+# Overall total number of flights per category
+df.sum()[['arr_flights', 'arr_del15', 'arr_cancelled', 'arr_diverted']]
+
+#pie chart of results
+labels = ['arr_flights', 'arr_del15', 'arr_cancelled', 'arr_diverted']
+sizes = [332110, 60455, 6938, 677]
+plt.pie(sizes, labels=labels, autopct='%1.1f%%')
+plt.title("Number of flights per category")
+plt.show
+
+# Overall average number of airline delays per category
+df.mean() [[' carrier_delay', 'weather_delay', 'nas_delay', 'security_delay', 'late_aircraft_delay']]
+
+labels = ['nas_delay','late_aircraft_delay',' carrier_delay','weather_delay','security_delay']
+sizes = [1926.17, 1555.17, 1261.98, 123.89, 9.20]
+plt.pie(sizes, labels=labels, autopct='%1.1f%%')
+plt.title("Type of delays")
+plt.show
+
+# average number of flights per delay cause per year
+df.groupby('year').mean() [[' carrier_delay','weather_delay','nas_delay','security_delay','late_aircraft_delay']]
+
+df.groupby('year').mean() [[' carrier_delay','weather_delay','nas_delay','security_delay','late_aircraft_delay']].plot(kind='bar')
+plt.show
+
